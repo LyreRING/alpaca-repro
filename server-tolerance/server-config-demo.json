@@ -1,0 +1,335 @@
+{
+    "output-path": "/results/00_tolerance.txt",
+    "certificates": [
+        "/etc/ssl/cert-data/tls-server.com-chain.crt"
+    ],
+    "servers": [
+        {
+            "name": "dovecot-imap",
+            "host": "dovecot",
+            "protocol": "imap",
+            "port": 993,
+            "starttls": false,
+            "login": {
+                "user": "lyre",
+                "password": "12345"
+            },
+            "payloads": {
+                "upload": [
+                    "A1 LOGIN lyre 12345\r\nA1 SELECT INBOX\r\nA1 FETCH 1:* (FLAGS)\r\nA1 FETCH 1 all\r\n"
+                ],
+                "reflection": [
+                    "A1 LOGIN lyre 12345\r\nA1 SELECT <script>alert(\"what you want\")<script/>\r\n"
+                ]
+            }
+        },
+        {
+            "name": "dovecot-pop3",
+            "host": "dovecot",
+            "protocol": "pop3",
+            "port": 995,
+            "starttls": false,
+            "login": {
+                "user": "lyre",
+                "password": "12345"
+            },
+            "payloads": {
+                "upload": [
+                    "USER lyre\r\nPASS 12345\r\nRETR 1\r\n"
+                ],
+                "reflection": [
+                    "USER lyre\r\nPASS 12345\r\nLIST <script>thisismyscript</script>"
+                ]
+            }
+        },
+        {
+            "name": "vsftpd",
+            "host": "vsftpd",
+            "protocol": "ftp",
+            "port": 21,
+            "starttls": true,
+            "login": {
+                "user": "root",
+                "password": "root"
+            },
+            "payloads": {
+                "upload": [
+                    "USER root\r\nPASS root\r\nPASV\r\n",
+                    "whatever to contain the coockie"
+                ],
+                "download": [
+                    "USER root\r\nPASS root\r\nPASV\r\n"
+                ],
+                "reflection": [
+                    "USER <script>alert(\"hello i am lyre\")</script>"
+                ]
+            }
+        },
+        {
+            "name": "postfix-smtp",
+            "host": "postfix",
+            "protocol": "smtp",
+            "port": 465,
+            "starttls": true,
+            "payloads": {
+                "upload": [
+                    "MAIL FROM:testuser\r\nRCPT TO:liuying23@mails.tsinghua.edu.cn\r\nDATA\r\n"
+                ],
+                "reflection": [
+                    "VERY reflection_payload"
+                ]
+            }
+        },
+        {
+            "name": "courier-imap",
+            "host": "courier",
+            "protocol": "imap",
+            "port": 993,
+            "starttls": false,
+            "login": {
+                "user": "bob",
+                "password": "12345"
+            },
+            "payloads": {
+                "upload": [
+                    "A1 LOGIN bob 12345\r\nA1 SELECT INBOX\r\nA1 FETCH 1:* (FLAGS)\r\nA1 FETCH 1 all\r\n"
+                ],
+                "reflection": [
+                    "A1 LOGIN bob 12345\r\nA1 SELECT <script>alert(\"what you want\")<script/>\r\n"
+                ]
+            }
+        },
+        {
+            "name": "courier-pop3",
+            "host": "courier",
+            "protocol": "pop3",
+            "port": 995,
+            "starttls": false,
+            "login": {
+                "user": "bob",
+                "password": "12345"
+            },
+            "payloads": {
+                "upload": [
+                    "USER bob\r\nPASS 12345\r\nRETR 1\r\n"
+                ],
+                "reflection": [
+                    "USER bob\r\nPASS 12345\r\nLIST <script>thisismyscript</script>"
+                ]
+            }
+        },
+        {
+            "name": "exim-smtp",
+            "host": "exim",
+            "protocol": "smtp",
+            "port": 465,
+            "starttls": false,
+            "payloads": {
+                "upload": [
+                    "MAIL FROM:testuser\r\nRCPT TO:liuying23@mails.tsinghua.edu.cn\r\nDATA\r\n"
+                ],
+                "reflection": [
+                    "VERY reflection_payload"
+                ]
+            }
+        },
+        {
+            "name": "cyrus-imap",
+            "host": "cyrus",
+            "protocol": "imap",
+            "port": 993,
+            "starttls": false
+        },
+        {
+            "name": "cyrus-pop3",
+            "host": "cyrus",
+            "protocol": "pop3",
+            "port": 995,
+            "starttls": false
+        },
+        {
+            "name": "sendmail-smtp",
+            "host": "sendmail",
+            "protocol": "smtp",
+            "port": 465,
+            "starttls": false
+        },
+        {
+            "name": "proftpd",
+            "host": "proftpd",
+            "protocol": "ftp",
+            "port": 21,
+            "starttls": true
+        },
+        {
+            "name": "opensmtpd-smtp",
+            "host": "opensmtpd",
+            "protocol": "smtp",
+            "port": 465,
+            "starttls": false,
+            "payloads": {
+                "upload": [
+                    "MAIL FROM:testuser\r\nRCPT TO:liuying23@mails.tsinghua.edu.cn\r\nDATA\r\n"
+                ],
+                "reflection": [
+                    "HELO reflection_payload"
+                ]
+            }
+        },
+        {
+            "name": "filezillaserver",
+            "host": "filezillaserver",
+            "protocol": "ftp",
+            "port": 21,
+            "starttls": true,
+            "payloads": {
+                "upload": [
+                    "USER root\r\nPASS root\r\nPASV\r\n",
+                    "whatever to contain the coockie"
+                ],
+                "download": [
+                    "USER root\r\nPASS root\r\nPASV\r\n"
+                ],
+                "reflection": [
+                    "USER <script>alert(\"hello i am lyre\")</script>"
+                ]
+            }
+        },
+        {
+            "name": "pureftpd",
+            "host": "pureftpd",
+            "protocol": "ftp",
+            "port": 21,
+            "starttls": true,
+            "login": {
+                "user": "root",
+                "password": "root"
+            },
+            "payloads": {
+                "upload": [
+                    "USER root\r\nPASS root\r\nPASV\r\nSTOR 123\r\n",
+                    "whatever to contain the coockie"
+                ],
+                "download": [
+                    "USER root\r\nPASS root\r\nPASV\r\nRETR 123\r\n"
+                ],
+                "reflection": [
+                    "USER <script>alert(\"hello i am lyre\")</script>"
+                ]
+            }
+        },
+        {
+            "name": "mailenable-smtp",
+            "host": "192.168.122.240",
+            "protocol": "smtp",
+            "port": 25,
+            "starttls": true,
+            "payloads": {
+                "upload": [
+                    "MAIL FROM:testuser\r\nRCPT TO:liuying23@mails.tsinghua.edu.cn\r\nDATA\r\n"
+                ],
+                "reflection": [
+                    "ETRN reflection_payload"
+                ]
+            }
+        },
+        {
+            "name": "microsoftiis-ftp-internet",
+            "host": "waws-prod-dm1-6c352d1f.publish.p.azurewebsites.windows.net",
+            "protocol": "ftp",
+            "port": 21,
+            "starttls": "true",
+            "payloads": {
+                "upload": [
+                    "HELP\r\n",
+                    "whatever to contain the coockie"
+                ]
+            }
+        }
+    ],
+    "protocol-info": [
+        {
+            "protocol": "smtp",
+            "reflection-test-cmds": [
+                "VRFY",
+                "EXPN",
+                "HELP",
+                "ETRN",
+                "HELO",
+                "EHLO",
+                "MAIL FROM:",
+                "RCPT TO:",
+                "SOML FROM:",
+                "SAML FROM:"
+            ]
+        },
+        {
+            "protocol": "pop3",
+            "reflection-test-cmds": [
+                "USER",
+                "LIST",
+                "RETR",
+                "DELE",
+                "HELP"
+            ]
+        },
+        {
+            "protocol": "imap",
+            "reflection-test-cmds": [
+                "A1 LIST",
+                "A1 CREATE",
+                "A1 DELETE",
+                "A1 RENAME aaa",
+                "A1 LSUB",
+                "A1 SELECT",
+                "A1 FETCH"
+            ]
+        },
+        {
+            "protocol": "ftp",
+            "reflection-test-cmds": [
+                "ALLO",
+                "ACCT",
+                "AUTH",
+                "CWD",
+                "DELE",
+                "DSIZ",
+                "EPSV",
+                "HELP",
+                "LIST",
+                "LPSV",
+                "LPRT",
+                "MDTM",
+                "MFCT",
+                "MFF",
+                "MFMT",
+                "MKD",
+                "MLSD",
+                "MLST",
+                "MODE",
+                "NLST",
+                "OPTS",
+                "PASV",
+                "PBSZ",
+                "PORT",
+                "PROT",
+                "RETR",
+                "RMD",
+                "RMDA",
+                "RNFR",
+                "RNTO",
+                "SITE",
+                "SIZE",
+                "SMNT",
+                "STOR",
+                "STOU",
+                "STRU",
+                "THMB",
+                "TYPE",
+                "USER",
+                "XMKD",
+                "XPWD"
+            ]
+        }
+    ]
+}
