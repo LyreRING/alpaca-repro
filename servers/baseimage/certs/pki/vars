@@ -1,0 +1,4 @@
+set_var EASYRSA_DN     "cn_only"
+set_var EASYRSA_DIGEST "sha512"
+set_var EASYRSA_BATCH    "1"
+set_var EASYRSA_REQ_CN "alpaca.poc"
