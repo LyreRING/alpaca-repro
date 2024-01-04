@@ -148,6 +148,16 @@ process_webserver_res() {
     --unique-certs-with-webserver-output $RESULT_DIR/07_unique_certs_with_webserver.txt \
     --server-statistics-output $RESULT_DIR/08_server_statistics.txt \
     $WARN_UNKNOWN_ERROR
+}``
+
+process_banner_res() {
+  echo "[*] step 7: process banner result and get server type"
+
+  python3 step7_banner_process.py \
+    --processed-appscan-res $RESULT_DIR/03_appscan_output_processed.txt \
+    --unique-certs-with-webserver $RESULT_DIR/07_unique_certs_with_webserver.txt \
+    --server-statistics-output $RESULT_DIR/09_server_type_statistics.txt \
+    $WARN_UNKNOWN_ERROR
 }
 
 mkdir -p $BUILD_DIR
@@ -163,3 +173,4 @@ test_and_run_step process_result_appscan 3
 test_and_run_step gather_cert 4
 test_and_run_step start_scan_webserver 5
 test_and_run_step process_webserver_res 6
+test_and_run_step process_banner_res 7
